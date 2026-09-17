@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOFOCAS BRASIL - Jornalismo & Entretenimento</title>
+    <style>
+        :root {
+            --primary: #e63946;
+            --primary-dark: #ba181b;
+            --secondary: #1d3557;
+            --accent: #ffb703;
+            --bg-body: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-main: #2b2d42;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Top Bar - Letreiro Correndo */
+        .urgent-bar {
+            background-color: var(--primary);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .urgent-tag {
+            background-color: #fff;
+            color: var(--primary);
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            z-index: 2;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        .ticker-wrapper {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-text {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: ticker 25s linear infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        .ticker-text:hover {
+            animation-play-state: paused;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 3px solid var(--primary);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 900;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--secondary);
+            line-height: 1;
+        }
+
+        .logo-text h1 span {
+            color: var(--primary);
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        nav {
+            background-color: var(--secondary);
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            padding: 0 16px;
+        }
+
+        .nav-link {
+            color: #e0e1dd;
+            text-decoration: none;
+            padding: 12px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .nav-link.active {
+            color: #fff;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .news-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .news-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .badge-category {
+            background-color: rgba(230, 57, 70, 0.1);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .badge-urgent {
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .news-card h2 {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .news-image-container {
+            width: 100%;
+            max-height: 380px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #eee;
+        }
+
+        .news-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .news-card p {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        /* Botão Ler Matéria */
+        .btn-read-more {
+            display: inline-block;
+            background-color: var(--primary);
+            color: #ffffff;
+            font-weight: 700;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-read-more:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Estrutura do Modal (Aba Flutuante) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .btn-close-modal:hover {
+            color: var(--primary);
+        }
+
+        .modal-body p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .loading-box, .empty-box {
+            text-align: center;
+            padding: 50px 20px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 25px 16px;
+            margin-top: 50px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="urgent-bar">
+        <span class="urgent-tag">ULTRA URGENTE</span>
+        <div class="ticker-wrapper">
+            <span id="ticker-content" class="ticker-text">Carregando últimas notícias urgentes...</span>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <div class="logo-box">
+                <div class="logo-icon">F</div>
+                <div class="logo-text">
+                    <h1>FOFOCAS<span>BRASIL</span></h1>
+                    <p>Jornalismo & Entretenimento</p>
+                </div>
+            </div>
+        </div>
+        <nav>
+            <div class="nav-container">
+                <a href="#" class="nav-link active">Início</a>
+                <a href="#" class="nav-link">Famosos</a>
+                <a href="#" class="nav-link">Música</a>
+                <a href="#" class="nav-link">Viralizou</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div id="feed" class="feed-container">
+            <div class="loading-box">
+                <h3>Buscando matérias no repositório...</h3>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para Exibir a Notícia Completa -->
+    <div id="news-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="fecharModal()">&times;</button>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>FOFOCAS BRASIL</strong> | Sistema Autônomo de Leitura de Matérias</p>
+        <p>© 2026 Fofocas Brasil. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        const USUARIO = 'victordohtml-c';
+        const REPOSITORIO = 'fofocasbrasil';
+        const API_URL = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/`;
+
+        // Guarda os dados das matérias na memória para abrir no modal
+        const materiasCache = {};
+
+        async function carregarTodasAsNoticias() {
+            const feedContainer = document.getElementById('feed');
+            const tickerContent = document.getElementById('ticker-content');
+
+            try {
+                const resposta = await fetch(API_URL);
+                if (!resposta.ok) throw new Error('Falha ao conectar com o GitHub');
+                
+                const arquivos = await resposta.json();
+
+                const materias = arquivos.filter(arq => 
+                    arq.name.endsWith('.html') && arq.name.toLowerCase() !== 'index.html'
+                );
+
+                if (materias.length === 0) {
+                    feedContainer.innerHTML = `
+                        <div class="empty-box">
+                            <h3>Nenhum arquivo de matéria (.html) encontrado</h3>
+                            <p>Envie um arquivo .html no repositório com as tags h1, div com img e p.</p>
+                        </div>
+                    `;
+                    tickerContent.innerText = 'Nenhuma notícia urgente cadastrada no momento.';
+                    return;
+                }
+
+                feedContainer.innerHTML = '';
+                let noticiasUrgentes = [];
+
+                for (const materia of materias) {
+                    const resConteudo = await fetch(materia.download_url);
+                    const htmlTexto = await resConteudo.text();
+
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlTexto, 'text/html');
+
+                    const titleText = doc.querySelector('title')?.innerText || 'Famosos-Notícia';
+                    let eUrgente = false;
+                    let categoria = 'Geral';
+
+                    if (titleText.toLowerCase().startsWith('ultra')) {
+                        eUrgente = true;
+                        const partes = titleText.replace(/^ultra\s*-\s*/i, '').split('-');
+                        categoria = partes[0] || 'Famosos';
+                    } else if (titleText.includes('-')) {
+                        const partes = titleText.split('-');
+                        categoria = partes[0] || 'Famosos';
+                    }
+
+                    const tituloH1 = doc.querySelector('h1')?.innerText || 'Sem Título';
+                    const imgElement = doc.querySelector('div img');
+                    const imgSrc = imgElement ? imgElement.getAttribute('src') : '';
+                    
+                    // Pega todos os parágrafos para compor a matéria completa
+                    const paragrafos = Array.from(doc.querySelectorAll('p')).map(p => p.outerHTML).join('');
+                    const primeiroTexto = doc.querySelector('p')?.innerText || '';
+
+                    // Resumo para o feed principal
+                    const resumoTexto = primeiroTexto.length > 180 
+                        ? primeiroTexto.substring(0, 180) + '...' 
+                        : primeiroTexto;
+
+                    if (eUrgente) {
+                        noticiasUrgentes.push(tituloH1);
+                    }
+
+                    let urlImagemFinal = imgSrc;
+                    if (imgSrc && !imgSrc.startsWith('http')) {
+                        const nomeLimpo = imgSrc.replace(/^\.\//, '').replace(/^\//, '').trim();
+                        urlImagemFinal = `https://victordohtml-c.github.io/fofocasbrasil/${nomeLimpo}`;
+                    }
+
+                    // Armazena no cache para ler depois
+                    materiasCache[materia.name] = {
+                        titulo: tituloH1,
+                        categoria: categoria,
+                        eUrgente: eUrgente,
+                        imagem: urlImagemFinal,
+                        conteudo: paragrafos
+                    };
+
+                    const newsCard = document.createElement('article');
+                    newsCard.className = 'news-card';
+
+                    newsCard.innerHTML = `
+                        <div class="news-header">
+                            ${eUrgente ? '<span class="badge-urgent">ULTRA URGENTE</span>' : ''}
+                            <span class="badge-category">${categoria}</span>
+                        </div>
+                        <h2>${tituloH1}</h2>
+                        ${urlImagemFinal ? `
+                            <div class="news-image-container">
+                                <img src="${urlImagemFinal}" alt="${tituloH1}">
+                            </div>
+                        ` : ''}
+                        <p>${resumoTexto}</p>
+                        <button class="btn-read-more" onclick="abrirNoticia('${materia.name}')">Ler matéria completa ➔</button>
+                    `;
+
+                    feedContainer.appendChild(newsCard);
+                }
+
+                if (noticiasUrgentes.length > 0) {
+                    tickerContent.innerText = noticiasUrgentes.join('   ✦   ');
+                } else {
+                    tickerContent.innerText = 'Fofocas Brasil: Fique por dentro de tudo que acontece no mundo dos famosos!';
+                }
+
+            } catch (erro) {
+                console.error('Erro:', erro);
+                feedContainer.innerHTML = `
+                    <div class="empty-box">
+                        <h3>Erro ao carregar notícias</h3>
+                        <p>Verifique a conexão ou se o repositório é público.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function abrirNoticia(id) {
+            const noticia = materiasCache[id];
+            if (!noticia) return;
+
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <div class="news-header" style="margin-bottom: 15px;">
+                    ${noticia.eUrgente ? '<span class="badge-urgent">ULTRA URGENTE</span>' : ''}
+                    <span class="badge-category">${noticia.categoria}</span>
+                </div>
+                <h1 style="font-size: 2rem; color: var(--secondary); margin-bottom: 20px;">${noticia.titulo}</h1>
+                ${noticia.imagem ? `
+                    <div class="news-image-container" style="max-height: 450px;">
+                        <img src="${noticia.imagem}" alt="${noticia.titulo}">
+                    </div>
+                ` : ''}
+                <div style="font-size: 1.1rem; line-height: 1.8; color: var(--text-main);">
+                    ${noticia.conteudo}
+                </div>
+            `;
+
+            document.getElementById('news-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Evita rolagem do fundo
+        }
+
+        function fecharModal() {
+            document.getElementById('news-modal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restaura rolagem
+        }
+
+        // Fecha o modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('news-modal');
+            if (event.target === modal) {
+                fecharModal();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', carregarTodasAsNoticias);
+    </script>
+</body>
+</html>
