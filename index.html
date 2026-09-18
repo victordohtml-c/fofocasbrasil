@@ -96,6 +96,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
         }
 
         .logo-icon {
@@ -139,6 +140,7 @@
             display: flex;
             gap: 20px;
             padding: 0 16px;
+            overflow-x: auto;
         }
 
         .nav-link {
@@ -147,6 +149,16 @@
             padding: 12px 0;
             font-size: 0.9rem;
             font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #fff;
         }
 
         .nav-link.active {
@@ -251,7 +263,7 @@
             transform: translateY(-2px);
         }
 
-        /* Estrutura do Modal (Aba Flutuante) */
+        /* Estrutura do Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -301,12 +313,6 @@
             color: var(--primary);
         }
 
-        .modal-body p {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-
         .loading-box, .empty-box {
             text-align: center;
             padding: 50px 20px;
@@ -336,7 +342,7 @@
 
     <header>
         <div class="header-container">
-            <div class="logo-box">
+            <div class="logo-box" onclick="filtrarCategoria('Início', this)">
                 <div class="logo-icon">F</div>
                 <div class="logo-text">
                     <h1>FOFOCAS<span>BRASIL</span></h1>
@@ -346,10 +352,10 @@
         </div>
         <nav>
             <div class="nav-container">
-                <a href="#" class="nav-link active">Início</a>
-                <a href="#" class="nav-link">Famosos</a>
-                <a href="#" class="nav-link">Música</a>
-                <a href="#" class="nav-link">Viralizou</a>
+                <button class="nav-link active" onclick="filtrarCategoria('Início', this)">Início</button>
+                <button class="nav-link" onclick="filtrarCategoria('Famosos', this)">Famosos</button>
+                <button class="nav-link" onclick="filtrarCategoria('Música', this)">Música</button>
+                <button class="nav-link" onclick="filtrarCategoria('Viralizou', this)">Viralizou</button>
             </div>
         </nav>
     </header>
@@ -380,7 +386,7 @@
         const REPOSITORIO = 'fofocasbrasil';
         const API_URL = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/`;
 
-        // Guarda os dados das matérias na memória para abrir no modal
+        let todasAsMaterias = [];
         const materiasCache = {};
 
         async function carregarTodasAsNoticias() {
@@ -408,7 +414,7 @@
                     return;
                 }
 
-                feedContainer.innerHTML = '';
+                todasAsMaterias = [];
                 let noticiasUrgentes = [];
 
                 for (const materia of materias) {
@@ -425,21 +431,19 @@
                     if (titleText.toLowerCase().startsWith('ultra')) {
                         eUrgente = true;
                         const partes = titleText.replace(/^ultra\s*-\s*/i, '').split('-');
-                        categoria = partes[0] || 'Famosos';
+                        categoria = partes[0]?.trim() || 'Famosos';
                     } else if (titleText.includes('-')) {
                         const partes = titleText.split('-');
-                        categoria = partes[0] || 'Famosos';
+                        categoria = partes[0]?.trim() || 'Famosos';
                     }
 
                     const tituloH1 = doc.querySelector('h1')?.innerText || 'Sem Título';
                     const imgElement = doc.querySelector('div img');
                     const imgSrc = imgElement ? imgElement.getAttribute('src') : '';
                     
-                    // Pega todos os parágrafos para compor a matéria completa
                     const paragrafos = Array.from(doc.querySelectorAll('p')).map(p => p.outerHTML).join('');
                     const primeiroTexto = doc.querySelector('p')?.innerText || '';
 
-                    // Resumo para o feed principal
                     const resumoTexto = primeiroTexto.length > 180 
                         ? primeiroTexto.substring(0, 180) + '...' 
                         : primeiroTexto;
@@ -454,41 +458,29 @@
                         urlImagemFinal = `https://victordohtml-c.github.io/fofocasbrasil/${nomeLimpo}`;
                     }
 
-                    // Armazena no cache para ler depois
-                    materiasCache[materia.name] = {
+                    const dadosMateria = {
+                        id: materia.name,
                         titulo: tituloH1,
                         categoria: categoria,
                         eUrgente: eUrgente,
                         imagem: urlImagemFinal,
+                        resumo: resumoTexto,
                         conteudo: paragrafos
                     };
 
-                    const newsCard = document.createElement('article');
-                    newsCard.className = 'news-card';
-
-                    newsCard.innerHTML = `
-                        <div class="news-header">
-                            ${eUrgente ? '<span class="badge-urgent">ULTRA URGENTE</span>' : ''}
-                            <span class="badge-category">${categoria}</span>
-                        </div>
-                        <h2>${tituloH1}</h2>
-                        ${urlImagemFinal ? `
-                            <div class="news-image-container">
-                                <img src="${urlImagemFinal}" alt="${tituloH1}">
-                            </div>
-                        ` : ''}
-                        <p>${resumoTexto}</p>
-                        <button class="btn-read-more" onclick="abrirNoticia('${materia.name}')">Ler matéria completa ➔</button>
-                    `;
-
-                    feedContainer.appendChild(newsCard);
+                    materiasCache[materia.name] = dadosMateria;
+                    todasAsMaterias.push(dadosMateria);
                 }
 
+                // Atualiza o letreiro do topo
                 if (noticiasUrgentes.length > 0) {
                     tickerContent.innerText = noticiasUrgentes.join('   ✦   ');
                 } else {
                     tickerContent.innerText = 'Fofocas Brasil: Fique por dentro de tudo que acontece no mundo dos famosos!';
                 }
+
+                // Exibe todas as notícias no início
+                renderizarFeed(todasAsMaterias);
 
             } catch (erro) {
                 console.error('Erro:', erro);
@@ -498,6 +490,59 @@
                         <p>Verifique a conexão ou se o repositório é público.</p>
                     </div>
                 `;
+            }
+        }
+
+        function renderizarFeed(lista) {
+            const feedContainer = document.getElementById('feed');
+            feedContainer.innerHTML = '';
+
+            if (lista.length === 0) {
+                feedContainer.innerHTML = `
+                    <div class="empty-box">
+                        <h3>Nenhuma matéria encontrada nesta categoria.</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            lista.forEach(item => {
+                const newsCard = document.createElement('article');
+                newsCard.className = 'news-card';
+
+                newsCard.innerHTML = `
+                    <div class="news-header">
+                        ${item.eUrgente ? '<span class="badge-urgent">ULTRA URGENTE</span>' : ''}
+                        <span class="badge-category">${item.categoria}</span>
+                    </div>
+                    <h2>${item.titulo}</h2>
+                    ${item.imagem ? `
+                        <div class="news-image-container">
+                            <img src="${item.imagem}" alt="${item.titulo}">
+                        </div>
+                    ` : ''}
+                    <p>${item.resumo}</p>
+                    <button class="btn-read-more" onclick="abrirNoticia('${item.id}')">Ler matéria completa ➔</button>
+                `;
+
+                feedContainer.appendChild(newsCard);
+            });
+        }
+
+        function filtrarCategoria(nomeCategoria, elementoBotao) {
+            // Atualiza a classe ativa do menu
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+            if (elementoBotao && elementoBotao.classList) {
+                elementoBotao.classList.add('active');
+            }
+
+            if (nomeCategoria === 'Início') {
+                renderizarFeed(todasAsMaterias);
+            } else {
+                const filtradas = todasAsMaterias.filter(m => 
+                    m.categoria.toLowerCase() === nomeCategoria.toLowerCase()
+                );
+                renderizarFeed(filtradas);
             }
         }
 
@@ -523,15 +568,14 @@
             `;
 
             document.getElementById('news-modal').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Evita rolagem do fundo
+            document.body.style.overflow = 'hidden';
         }
 
         function fecharModal() {
             document.getElementById('news-modal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Restaura rolagem
+            document.body.style.overflow = 'auto';
         }
 
-        // Fecha o modal ao clicar fora dele
         window.onclick = function(event) {
             const modal = document.getElementById('news-modal');
             if (event.target === modal) {
